@@ -9,7 +9,7 @@ import pandas as pd
 import geopandas as gpd
 import numpy as np
 import unicodedata
-
+from pathlib import Path
 # ==============================================================================
 # SECCIÓN 2: CARGA Y LIMPIEZA DE DATOS
 # ==============================================================================
@@ -85,15 +85,19 @@ server = app.server
 # ==============================================================================
 # SECCIÓN 4: DISEÑO DE LA PÁGINA WEB (LAYOUT)
 # ==============================================================================
+# ==============================================================================
+# SECCIÓN 4: DISEÑO DE LA PÁGINA WEB (LAYOUT)
+# ==============================================================================
 app.layout = html.Div(children=[
-    # Título principal del dashboard
     html.H1(
         children='Valor promedio de arriendo en UF Julio 2025',
-        style={'textAlign': 'center', 'color': '#333', 'fontFamily': 'Arial, sans-serif'}
+        style={'textAlign': 'center', 'color': '#333', 'fontFamily': 'Arial, sans-serif', 'padding': '10px'}
     ),
 
-    # Contenedor principal que divide la página en filtros y mapa
-    html.Div([
+    # --- CONTENEDOR PRINCIPAL CON FLEXBOX ---
+    # 'display: flex' convierte este Div en un contenedor flexible,
+    # permitiendo que sus hijos (filtros y mapa) se alineen en una fila.
+    html.Div(style={'display': 'flex', 'flexDirection': 'row'}, children=[
         
         # --- DIV de la Columna de Filtros (Izquierda) ---
         html.Div([
@@ -112,28 +116,23 @@ app.layout = html.Div(children=[
             html.Label("Número de Baños:", style={'fontWeight': 'bold', 'fontFamily': 'Arial, sans-serif'}),
             dcc.Dropdown(
                 id='dropdown-banos',
-                options=[{'label': 'Todos', 'value': 'todos'}] + [{'label': f'{i} Baños', 'value': i} for i in sorted(df_propiedades['Baños'].unique())],
                 value='todos',
                 clearable=False
             ),
         ], style={
-            'width': '25%',
-            'float': 'left',
+            # Ocupa un 25% del espacio pero no se encogerá más de 300px
+            'flex': '1 1 25%',
+            'maxWidth': '300px',
             'padding': '20px',
-            'boxSizing': 'border-box',
-            'border': '1px solid #ddd',
-            'borderRadius': '5px',
             'backgroundColor': '#f9f9f9',
-            'margin': '10px'
         }),
 
         # --- DIV de la Columna del Mapa (Derecha) ---
         html.Div([
-            dcc.Graph(id='mapa-comunas', style={'height': '80vh'})
+            dcc.Graph(id='mapa-comunas', style={'height': '85vh'}) # Aumentamos un poco la altura
         ], style={
-            'width': '73%', # Un poco menos para dar espacio al margen
-            'float': 'right',
-            'boxSizing': 'border-box',
+            # Ocupa el espacio restante
+            'flex': '3 1 75%',
             'padding': '10px'
         })
 
